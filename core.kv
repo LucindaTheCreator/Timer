@@ -1,0 +1,213 @@
+
+# Nazvao sam Timer window StartScreen radi bolje čitljivosti
+# Maknuti sve deafult returnere kad se postave
+
+WindowManager:
+    StartWindow:
+    LoginWindow:
+    MainWindow:
+    SubWindowBlank:
+    SubWindowStats:
+    SubWindowFacts:
+    SettingsWindow:
+
+
+# Primjer global settingsa za widget
+
+<MDLabel>:
+    font_name: "Fonts/Montserrat-Light.ttf"
+<Button>:
+    background_color: (0,0,0,0)
+    color: (0,0,0,1)
+
+
+# Prozori su inicijalizirani - treba promijeniti imena
+
+
+
+<StartWindow>:
+    name: "start"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            size_hint: 1, .1
+            rows: 1
+            cols: 3
+            MDLabel:
+                text: root.WelcomeText
+            MDIconButton:
+                on_release:
+                    root.goto_window(6)
+
+        MDFloatLayout:
+            Button:
+                pos_hint: {"x":.35, "y":.15}
+                size_hint: .3,.54
+                on_release:
+                    #root.center_widget_clicked()
+                    root.UtilLogin()
+            Image:
+                pos_hint: {"y":-0.1}
+                source: "images/Start_SelectButton.png"
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,.2
+            Image:
+                source: "images/Bottom_Menu.png"
+                size_hint: 2.49,2.47
+
+
+<LoginWindow>:
+    name: "login"
+    spacing: 20
+    MDBoxLayout:
+        orientation: "vertical"
+        MDLabel:
+            text: "Timer"
+            font_size:'30sp'
+            color: "blue"
+            font_name: "Fonts/LaBelleAurore-Regular.ttf"
+            pos_hint: {"x":0.45}
+        MDBoxLayout:
+            spacing: 30
+            orientation: "vertical"
+            MDTextField:
+                id: nameSurname
+                hint_text: "ime i prezime:"
+                helper_text: root.ErrNameText
+                helper_text_mode: "persistent"
+                helper_text_color_normal: "red"
+                on_text:
+                    root.verify_name(self)
+            MDTextField:
+                id: Email
+                hint_text: "E-mail:"
+                helper_text: root.ErrMailText
+                helper_text_mode: "persistent"
+                helper_text_color_normal: "red"
+                on_text:
+                    root.verify_email(self)
+            MDRaisedButton:
+                id: ageButton
+                text: root.AgeText
+                on_press:
+                    root.OpenAgeGroup()
+        MDBoxLayout:
+
+            size_hint: 1,1
+            MDFillRoundFlatButton:
+                size_hint: 0.2,0.2
+                pos_hint: {"y":0.1}
+                id: "submit_button"
+                disabled: root.DisabledSubmit
+                text: "Submit"
+                on_release:
+                    root.submitLogin()
+
+
+
+<MainWindow>:
+    name: "main"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            rows: 1
+            cols: 3
+            Button:
+                size_hint: .1,.1
+                text: "return"
+                on_release:
+                    root.goto_window(1)
+            MDLabel:
+                text: "OVDJE IDE GORNJI TOOLBAR ZA MAIN"
+            MDIconButton:
+                on_release:
+                    root.goto_window(6)
+
+<SubWindowBlank>:
+    name: "blank"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            size_hint: 1, .1
+            rows: 1
+            cols: 3
+            Button:
+                size_hint: .1,.1
+                text: "return"
+                on_release:
+                    root.goto_last()
+            MDLabel:
+                text: "blank"
+        MDFloatLayout:
+            MDLabel:
+                text: ""
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,.2
+            MDLabel:
+                text: "DONJI TOOLBAR"
+
+
+<SubWindowStats>:
+    name: "stats"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            size_hint: 1, .1
+            rows: 1
+            cols: 3
+            Button:
+                size_hint: .1,.1
+                text: "return"
+                on_release:
+                    root.goto_last()
+            MDLabel:
+                text: "stats"
+        MDFloatLayout:
+            MDLabel:
+                text: ""
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,.2
+            MDLabel:
+                text: "DONJI TOOLBAR"
+
+<SubWindowFacts>:
+    name: "facts"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            size_hint: 1, .1
+            rows: 1
+            cols: 3
+            Button:
+                size_hint: .1,.1
+                text: "return"
+                on_release:
+                    root.goto_last()
+            MDLabel:
+                text: "facts"
+        MDFloatLayout:
+            MDLabel:
+                text: ""
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,.2
+            MDLabel:
+                text: "DONJI TOOLBAR"
+
+
+<SettingsWindow>:
+    name: "settings"
+    MDBoxLayout:
+        orientation: "vertical"
+        MDGridLayout:
+            size_hint: 1, .1
+            rows: 1
+            cols: 3
+            MDLabel:
+                text: "Postavke"
+            MDIconButton:
+                on_release:
+                    root.goto_last()
