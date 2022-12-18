@@ -1,23 +1,18 @@
-import random
+import re
 
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ColorProperty, BooleanProperty
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.metrics import dp
+from kivy.properties import StringProperty, BooleanProperty
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton, MDRaisedButton
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.label import MDLabel
-from kivy.uix.scrollview import ScrollView
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.uix.floatlayout import FloatLayout
-from kivy.metrics import dp, sp
-import re
+
 from utilities.Hashtools import *
-from utilities.modular_DB_opener import Opener
 from utilities.Modular_DB_creator import Assembler
 from utilities.Timetools import *
+from utilities.modular_DB_opener import Opener
 
 Window.size = (700 / 1.8, 1560 / 2)
 
@@ -238,6 +233,8 @@ class SubWindowBlank(Screen, BasicFunctions):
 class SubWindowStats(Screen, BasicFunctions):
     pass
 
+class SecondFormWindow(Screen,BasicFunctions):
+    pass
 
 class SubWindowFacts(Screen, BasicFunctions):
     pass
