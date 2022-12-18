@@ -86,6 +86,7 @@ class StartWindow(Screen, BasicFunctions):
             self.manager.current = "login"
         else:
             self.start_init()
+            self.manager.current = "second_form"
 
     def start_init(self):
         Otemp = O("UserData")

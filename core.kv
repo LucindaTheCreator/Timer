@@ -8,6 +8,7 @@
 WindowManager:
     StartWindow:
     LoginWindow:
+    SecondFormWindow:
     MainWindow:
     SubWindowBlank:
     SubWindowStats:
@@ -51,7 +52,7 @@ WindowManager:
                     root.UtilLogin()
             Image:
                 pos_hint: {"y":-0.1}
-                source: "images/Start_SelectButton.png"
+                source: "images/Start_SelectButtonNew.png"
         MDBoxLayout:
             orientation: "horizontal"
             size_hint: 1,.2
@@ -110,7 +111,66 @@ WindowManager:
 
 
 <SecondFormWindow>:
-   name: "second_form"
+    name: "second_form"
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/SecondForm_Background.png"
+            size: self.size
+    MDBoxLayout:
+        orientation: "vertical"
+        MDBoxLayout:
+            size_hint: 1,0.3
+            spacing: 1
+            orientation:"vertical"
+            MDLabel:
+                text: "Just one more step..."
+                font_name: "Fonts/LaBelleAurore-Regular.ttf"
+                font_size: "36dp"
+                size_hint: None, None
+                text_size: self.texture_size
+                pos_hint: {"center_x":.5}
+                color: "blue"
+            MDLabel:
+                text: "Choose three fields \n that you want to \n monitor:"
+                size_hint: 1, 1
+                pos_hint: {"center_x":.5}
+                color: "blue"
+        MDFloatLayout:
+            MDBoxLayout:
+                size_hint: 1,0.8
+                padding_y: 100
+                pos_hint: {"center_y":0.75}
+                orientation: "vertical"
+                MDTextField:
+                    id: act1
+                    hint_text: "First activity"
+                    fill_color: 0, 0, 0, 1
+                MDTextField:
+                    id: act2
+                    hint_text: "Second activity"
+                    fill_color: 0, 0, 0, 1
+                MDTextField:
+                    id: act3
+                    hint_text: "Third activity"
+                    fill_color: 0, 0, 0, 1
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: 25
+            size_hint: 1, 0.15
+            MDFillRoundFlatButton:
+                id: submitAct
+                text: "Start"
+                size_hint: 0.5,0.05
+                pos_hint: {"x": 0.25}
+                #dodaj on press
+
+
+
+
+
+
+
 
 <MainWindow>:
     name: "main"
