@@ -23,8 +23,15 @@ WindowManager:
 <Button>:
     background_color: (0,0,0,0)
     color: (0,0,0,1)
-
-
+<MDTextField>:
+    mode: "round"
+    halign: "center"
+    fill_color_focus: (1,1,1,0.1)
+    fill_color_normal: (255,255,255,1)
+    size_hint: 0.9,1
+    pos_hint: {"x":0.05}
+    hint_text: ""
+    font_size: "24dp"
 # Prozori su inicijalizirani - treba promijeniti imena
 
 
@@ -65,18 +72,21 @@ WindowManager:
     name: "login"
     spacing: 20
     MDBoxLayout:
+        spacing: 40
         orientation: "vertical"
         MDLabel:
             text: "Timer"
-            font_size:'30sp'
+            font_size: "36dp"
             color: "blue"
             font_name: "Fonts/LaBelleAurore-Regular.ttf"
-            pos_hint: {"x":0.45}
+            halign: "center"
+            pos_hint: {"x":0}
         MDBoxLayout:
             spacing: 30
             orientation: "vertical"
             MDTextField:
                 id: nameSurname
+                mode: "round"
                 hint_text: "ime i prezime:"
                 helper_text: root.ErrNameText
                 helper_text_mode: "persistent"
@@ -85,6 +95,7 @@ WindowManager:
                     root.verify_name(self)
             MDTextField:
                 id: Email
+                mode: "round"
                 hint_text: "E-mail:"
                 helper_text: root.ErrMailText
                 helper_text_mode: "persistent"
@@ -93,6 +104,9 @@ WindowManager:
                     root.verify_email(self)
             MDRaisedButton:
                 id: ageButton
+                font_size: "18dp"
+                size_hint_x: 0.6
+                pos_hint: {"center_x":0.5}
                 text: root.AgeText
                 on_press:
                     root.OpenAgeGroup()
@@ -124,36 +138,69 @@ WindowManager:
             spacing: 1
             orientation:"vertical"
             MDLabel:
+                id: testLabel
                 text: "Just one more step..."
                 font_name: "Fonts/LaBelleAurore-Regular.ttf"
                 font_size: "36dp"
-                size_hint: None, None
-                text_size: self.texture_size
+                size_hint: 1,1
                 pos_hint: {"center_x":.5}
+                halign:"center"
                 color: "blue"
             MDLabel:
                 text: "Choose three fields \n that you want to \n monitor:"
                 size_hint: 1, 1
+                halign: "center"
                 pos_hint: {"center_x":.5}
                 color: "blue"
         MDFloatLayout:
             MDBoxLayout:
-                size_hint: 1,0.8
-                padding_y: 100
+                spacing_y: 100
+                size_hint: 1,0.43
                 pos_hint: {"center_y":0.75}
                 orientation: "vertical"
                 MDTextField:
                     id: act1
-                    hint_text: "First activity"
-                    fill_color: 0, 0, 0, 1
+                    mode: "round"
+                    halign: "center"
+                    fill_color_focus: (1,1,1,0.1)
+                    hint_text: ""
+                    size_hint: 0.9,1
+                    max_text_length: 15
+                    pos_hint: {"x":0.05}
+                    font_size: "24dp"
+                    on_text:
+                        root.txtChk()
+
+
+                Widget:
                 MDTextField:
                     id: act2
-                    hint_text: "Second activity"
-                    fill_color: 0, 0, 0, 1
+                    mode: "round"
+                    halign: "center"
+                    max_text_length: 15
+                    fill_color_focus: (1,1,1,0.1)
+                    size_hint: 0.9,1
+                    pos_hint: {"x":0.05}
+                    hint_text: ""
+                    font_size: "24dp"
+                    on_text:
+                        root.txtChk()
+
+
+                Widget:
                 MDTextField:
                     id: act3
-                    hint_text: "Third activity"
-                    fill_color: 0, 0, 0, 1
+                    mode: "round"
+                    fill_color_focus: (1,1,1,0.1)
+                    max_text_length: 15
+                    halign: "center"
+                    size_hint: 0.9,1
+                    pos_hint: {"x":0.05}
+                    hint_text: ""
+                    font_size: "24dp"
+                    on_text:
+                        root.txtChk()
+
         MDBoxLayout:
             orientation: "vertical"
             padding: 25
@@ -161,9 +208,11 @@ WindowManager:
             MDFillRoundFlatButton:
                 id: submitAct
                 text: "Start"
+                disabled: True
                 size_hint: 0.5,0.05
                 pos_hint: {"x": 0.25}
-                #dodaj on press
+                on_release:
+                    root.SubmitArrangement()
 
 
 

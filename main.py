@@ -16,21 +16,20 @@ from utilities.modular_DB_opener import Opener
 
 Window.size = (700 / 1.8, 1560 / 2)
 
-O = Opener
-
-
 try:
     Runhash = open("runhash.dat", "r")
     print("opened")
 
 except FileNotFoundError:
     Runhash = open("runhash.dat", "w")
-    Runhash.write("FirstRun:bool:True")
+    Runhash.write("FirstRun:int:0")
     Runhash.close()
     Runhash = open("runhash.dat", "r")
 
 Datas = FormatHash(Runhash.read())
 print(Datas)
+APerm = Assembler("UserData", "a")
+OPerm = Opener("UserData")
 
 
 class User:
@@ -40,14 +39,14 @@ class User:
         self.last_screen = 1
         self.hasUD = False
 
-    def addBaseUserData(self,raw_data):
+    def addBaseUserData(self, raw_data):
         self.hasUD = True
         BaseUD = raw_data
-        self.name = raw_data[0]
-        self.surname = raw_data[1]
-        self.emaill = raw_data[2]
-        self.ageGroup = raw_data[3]
-        self.UID = raw_data[4]
+        self.name = raw_data[1]
+        self.surname = raw_data[2]
+        self.emaill = raw_data[3]
+        self.ageGroup = raw_data[4]
+        self.UID = raw_data[5]
 
     def set_last_screen(self, last_screen):
         self.last_screen = last_screen
@@ -68,6 +67,9 @@ class BasicFunctions:
     def goto_last(self):
         self.manager.current = U.get_last_screen()
 
+    def getWindowSize(self):
+        return Window.size
+
 
 class WindowManager(ScreenManager):
     pass
@@ -82,21 +84,21 @@ class StartWindow(Screen, BasicFunctions):
         Clock.schedule_once(lambda a: self.check_first_login(), 0)
 
     def check_first_login(self):
-        if Datas["FirstRun"]:
+        if Datas["FirstRun"] == 0:
             self.manager.current = "login"
+        elif Datas["FirstRun"] == 1:
+            self.manager.current = "second_form"
         else:
             self.start_init()
-            self.manager.current = "second_form"
 
     def start_init(self):
-        Otemp = O("UserData")
-        Data = Otemp.GetData("Users", "user_identifier=1")
+
+        Data = OPerm.GetData("Users", "user_identifier=1")
         U.addBaseUserData(Data[0])
         self.initialize_vars()
 
     def initialize_vars(self):
         self.WelcomeText = f"{getLocTimeGreet()} {U.name}."
-
 
     def center_widget_clicked(self):
         sz = (Window.size[0] / 2, Window.size[1] / 2)
@@ -119,7 +121,7 @@ class MainWindow(Screen, BasicFunctions):
     pass
 
 
-#Login je mostly gotov
+# Login je mostly gotov
 class LoginWindow(Screen):
     ErrNameText = StringProperty("")
     ErrMailText = StringProperty("")
@@ -213,18 +215,22 @@ class LoginWindow(Screen):
         AgeGroup = dct[self.ids.ageButton.text]
         NameAndSurname = self.ids.nameSurname.text.replace(" ", "_")
         Email = self.ids.Email.text
-        D = Assembler("UserData")
-        D.create_tables(["Users", f"{NameAndSurname}_Events", f"{NameAndSurname}_Functionality"],
-                        [["name", "surname", "email", "age_group", "user_identifier"],
-                         ["event_name", "event_desc", "start_time", "end_time", "event_score", "event_priority", "EID"],
-                         ["projects", "goals", "personalization_temp", "misc"]])
-        D.AddToTable("Users", [NameAndSurname.split("_")[0], NameAndSurname.split("_")[1], Email, AgeGroup,1])
-        Datas["FirstRun"] = False
-        WriteToHash(Datas)
-        start_screen = self.manager.get_screen("start")
-        start_screen.start_init()
+        APerm.create_tables(["Users", f"{NameAndSurname}_Events", f"{NameAndSurname}_Projects",
+                             f"{NameAndSurname}_Goals", f"{NameAndSurname}_Activities"],
+                            [["ref_name", "name", "surname", "email", "age_group", "user_identifier"],
+                             ["event_name", "event_desc", "start_time", "end_time", "event_score", "event_active",
+                              "event_priority", "EID"],
+                             ["project_name", "project_desc", "start_date", "end_date", "project_active",
+                              "project_score", "project_priority", "project_goal", "PID"],
+                             ["goal_name", "goal_desc", "goal_ref", "goal_score", "GID"],
+                             ["activity_name", "activity_active", "activity_slot", "activity_misc"]])
 
-        self.manager.current = "start"
+        APerm.AddToTable("Users", [NameAndSurname, NameAndSurname.split("_")[0],
+                                   NameAndSurname.split("_")[1], Email, AgeGroup, 1])
+        Datas["FirstRun"] = 1
+        WriteToHash(Datas)
+
+        self.manager.current = "second_form"
 
 
 class SubWindowBlank(Screen, BasicFunctions):
@@ -234,8 +240,43 @@ class SubWindowBlank(Screen, BasicFunctions):
 class SubWindowStats(Screen, BasicFunctions):
     pass
 
-class SecondFormWindow(Screen,BasicFunctions):
-    pass
+
+class SecondFormWindow(Screen, BasicFunctions):
+    textVerTot = 1
+
+    def txtChk(self):
+        L = (self.ids.act1, self.ids.act2, self.ids.act3)
+        self.textVerTot = 1
+        for i in range(3):
+            if len(L[i].text) > 15 or not L[i].text:
+                self.textVerTot = 0
+        if self.textVerTot:
+            self.ids.submitAct.disabled = False
+        else:
+            self.ids.submitAct.disabled = True
+
+    def addActivityData(self):
+        Datas = {"activity_one": self.ids.act1.text,
+                 "activity_two": self.ids.act2.text,
+                 "activity_three": self.ids.act3.text}
+
+        Data = OPerm.GetData("Users", "user_identifier=1")
+        print(Data)
+        Uname = Data[0][0]
+        ain = 1
+        for x in Datas.items():
+            APerm.AddToTable(f"{Uname}_Activities", [x[1], 1, ain, None])
+            ain += 1
+
+    def SubmitArrangement(self):
+        self.addActivityData()
+        start_screen = self.manager.get_screen("start")
+        Datas["FirstRun"] = 2
+        WriteToHash(Datas)
+
+        start_screen.start_init()
+        self.manager.current = "start"
+
 
 class SubWindowFacts(Screen, BasicFunctions):
     pass
@@ -246,8 +287,9 @@ class SettingsWindow(Screen, BasicFunctions):
 
 
 class MainApp(MDApp):
-
     def build(self):
+        self.width = Window.width
+        self.height = Window.height
         Start_Screen = Builder.load_file("core.kv")
         return Start_Screen
 
