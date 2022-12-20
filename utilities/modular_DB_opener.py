@@ -12,3 +12,7 @@ class Opener:
         command = f"SELECT * FROM {table} WHERE {parameter}"
         self.CUR.execute(command)
         return self.CUR.fetchall()
+
+    def closeConn(self):
+        self.CONN.commit()
+        self.CONN.close()

@@ -51,15 +51,21 @@ WindowManager:
                     root.goto_window(6)
 
         MDFloatLayout:
+
             Button:
-                pos_hint: {"x":.35, "y":.15}
-                size_hint: .3,.54
+                id: startPointerButton
+                size_hint: 0.9,0.55
+                pos_hint: {"center_x":.5,"center_y":.35}
                 on_release:
-                    #root.center_widget_clicked()
-                    root.UtilLogin()
+                    root.center_widget_clicked()
             Image:
-                pos_hint: {"y":-0.1}
+
+                pos_hint: {"y":-0.094,"x":.05}
+                size_hint: .9,.9
+                allow_stretch:False
+                size: self.texture_size
                 source: "images/Start_SelectButtonNew.png"
+
         MDBoxLayout:
             orientation: "horizontal"
             size_hint: 1,.2
@@ -234,10 +240,13 @@ WindowManager:
                 on_release:
                     root.goto_window(1)
             MDLabel:
-                text: "OVDJE IDE GORNJI TOOLBAR ZA MAIN"
+                text: root.MainText
             MDIconButton:
                 on_release:
                     root.goto_window(6)
+
+
+
 
 <SubWindowBlank>:
     name: "blank"
@@ -326,6 +335,8 @@ WindowManager:
             MDIconButton:
                 on_release:
                     root.goto_last()
-        MDLabel:
+        Button:
             text: "delete all data"
             color: "red"
+            on_release:
+                root.WipeUserQuery()

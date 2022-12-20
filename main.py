@@ -1,3 +1,4 @@
+import os
 import re
 
 from kivy.clock import Clock
@@ -5,10 +6,15 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import StringProperty, BooleanProperty
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.menu import MDDropdownMenu
 
+from utilities import MatrixLoader
 from utilities.Hashtools import *
 from utilities.Modular_DB_creator import Assembler
 from utilities.Timetools import *
@@ -26,10 +32,16 @@ except FileNotFoundError:
     Runhash.close()
     Runhash = open("runhash.dat", "r")
 
+StartButton = MatrixLoader.build_utl("Assets/SB_heatmap.utl")
+
 Datas = FormatHash(Runhash.read())
 print(Datas)
 APerm = Assembler("UserData", "a")
 OPerm = Opener("UserData")
+
+
+class ImageButton(ButtonBehavior, Image):
+    pass
 
 
 class User:
@@ -42,11 +54,23 @@ class User:
     def addBaseUserData(self, raw_data):
         self.hasUD = True
         BaseUD = raw_data
+        self.refName = raw_data[0]
         self.name = raw_data[1]
         self.surname = raw_data[2]
         self.emaill = raw_data[3]
         self.ageGroup = raw_data[4]
         self.UID = raw_data[5]
+
+    def AddActivities(self):
+        activities = OPerm.GetData(f"{self.refName}_Activities", "activity_active=1")
+        if len(activities) != 3:
+            raise RuntimeError("Activities be real bad")
+        self.activities = [(i[0], i[2]) for i in activities]
+        self.activities.sort(key=lambda a: a[1])
+        self.activities = [i[0] for i in activities]
+
+    def GetActivities(self):
+        return self.activities
 
     def set_last_screen(self, last_screen):
         self.last_screen = last_screen
@@ -69,6 +93,9 @@ class BasicFunctions:
 
     def getWindowSize(self):
         return Window.size
+
+    def getScreen(self, screen_name):
+        return self.manager.get_screen(screen_name)
 
 
 class WindowManager(ScreenManager):
@@ -98,27 +125,31 @@ class StartWindow(Screen, BasicFunctions):
         self.initialize_vars()
 
     def initialize_vars(self):
+        U.AddActivities()
         self.WelcomeText = f"{getLocTimeGreet()} {U.name}."
 
     def center_widget_clicked(self):
         sz = (Window.size[0] / 2, Window.size[1] / 2)
         mp = Window.mouse_pos
-        if ((sz[0] - mp[0]) * (sz[0] - mp[0]) + (sz[1] - mp[1]) * (sz[1] - mp[1])) ** 0.5 < 25:
-            self.goto_window(2)
-        elif mp[1] > sz[1]:
-            self.goto_window(3)
-        else:
-            if mp[0] < sz[0]:
-                self.goto_window(4)
-            elif mp[0] >= sz[0]:
-                self.goto_window(5)
-
-    def UtilLogin(self):
+        wdg = self.ids.startPointerButton
+        scalars = (wdg.size[0] / len(StartButton[0]), wdg.size[1] / len(StartButton))
+        r_pos = (int((mp[0] - wdg.pos[0]) / scalars[0]), int((330 - (mp[1] - wdg.pos[1])) / scalars[1]))
+        choice = StartButton[r_pos[1]][r_pos[0]]
+        if not choice:
+            return
+        acts = U.GetActivities()
+        M = self.getScreen("main")
+        M.setCurrentActivity(acts[choice - 1])
         self.goto_window(2)
 
 
 class MainWindow(Screen, BasicFunctions):
-    pass
+    MainText = StringProperty("Here go thy chosen chore")
+    CurrentActivity = ""
+
+    def setCurrentActivity(self, activity):
+        self.CurrentActivity = activity
+        self.MainText = f"You have chosen: {self.CurrentActivity}"
 
 
 # Login je mostly gotov
@@ -236,11 +267,11 @@ class LoginWindow(Screen):
 class SubWindowBlank(Screen, BasicFunctions):
     pass
 
-
 class SubWindowStats(Screen, BasicFunctions):
     pass
 
 
+# second form je mostly gotov
 class SecondFormWindow(Screen, BasicFunctions):
     textVerTot = 1
 
@@ -283,8 +314,38 @@ class SubWindowFacts(Screen, BasicFunctions):
 
 
 class SettingsWindow(Screen, BasicFunctions):
-    pass
+    def WipeUserQuery(self):
+        self.show_alert_dialog()
+        return
 
+    def WipeUserConfirm(self):
+        APerm.closeConn()
+        OPerm.closeConn()
+        Runhash.close()
+        os.remove("UserData.db")
+        os.remove("runhash.dat")
+        quit(0)
+
+    def show_alert_dialog(self):
+        self.dialog = MDDialog(
+            text="Are you sure? \n ..there is no going back",
+            buttons=[
+                MDFlatButton(
+                    text="YES",
+                    on_release=lambda a: self.WipeUserConfirm()
+
+                ),
+                MDFlatButton(
+                    text="NO",
+                    on_release=lambda a: self.close_alert_dialog()
+
+                ),
+            ],
+        )
+        self.dialog.open()
+
+    def close_alert_dialog(self):
+        self.dialog.dismiss()
 
 class MainApp(MDApp):
     def build(self):

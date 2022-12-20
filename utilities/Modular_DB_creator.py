@@ -96,3 +96,7 @@ class Assembler:
             self.CURS.execute(command)
         command = f"DELETE FROM all_tables"
         self.CURS.execute(command)
+
+    def closeConn(self):
+        self.CONN.commit()
+        self.CONN.close()
