@@ -10,11 +10,18 @@ def FormatHash(hash):
         dct[var[0]] = methds[var[1]](var[2])
     return dct
 
+
 def WriteToHash(data_dict):
     n_str = ""
     for x in data_dict.items():
         n_str += f"{x[0]}:{x[1].__class__.__name__}:{x[1]}"
-    Runhash = open("runhash.dat","w")
+    Runhash = open("runhash.dat", "w")
     Runhash.write(n_str)
     Runhash.close()
 
+
+def InitHash(name, args):
+    Runhash = open(f"{name}.dat", "w")
+    Runhash.write(args)
+    Runhash.close()
+    return open("runhash.dat", "r")

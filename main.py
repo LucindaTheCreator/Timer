@@ -22,15 +22,12 @@ from utilities.modular_DB_opener import Opener
 
 Window.size = (700 / 1.8, 1560 / 2)
 
+
 try:
     Runhash = open("runhash.dat", "r")
-    print("opened")
 
 except FileNotFoundError:
-    Runhash = open("runhash.dat", "w")
-    Runhash.write("FirstRun:int:0")
-    Runhash.close()
-    Runhash = open("runhash.dat", "r")
+    Runhash = InitHash("runhash", "FirstRun:int:0")
 
 StartButton = MatrixLoader.build_utl("Assets/SB_heatmap.utl")
 
@@ -104,6 +101,7 @@ class WindowManager(ScreenManager):
 
 class StartWindow(Screen, BasicFunctions):
     WelcomeText = StringProperty("__NAME__")
+    StartMotivationalLabel = StringProperty("Let's get some work done!")
 
     def __init__(self, **kw):
         super().__init__(**kw)

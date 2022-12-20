@@ -43,15 +43,31 @@ WindowManager:
         MDGridLayout:
             size_hint: 1, .1
             rows: 1
-            cols: 3
+            cols: 4
+
+            ImageButton:
+                text: "Support us!"
+                size_hint: 0.3,0.3
+
+
             MDLabel:
                 text: root.WelcomeText
-            MDIconButton:
+                halign: "center"
+
+
+            ImageButton:
+                source: "images/Settings_Icon.png"
+                size_hint: 0.2,0.2
                 on_release:
                     root.goto_window(6)
 
         MDFloatLayout:
-
+            MDLabel:
+                pos_hint: {"center_y":.7,"center_x":.5}
+                font_name: "Fonts/Unbounded/Unbounded-Bold.ttf"
+                font_size: "24dp"
+                text: root.StartMotivationalLabel
+                halign: "center"
             Button:
                 id: startPointerButton
                 size_hint: 0.9,0.55
