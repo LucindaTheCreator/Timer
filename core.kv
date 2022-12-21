@@ -38,6 +38,12 @@ WindowManager:
 
 <StartWindow>:
     name: "start"
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/Bottom_MenuNew.png"
+            size: self.size
+
     MDBoxLayout:
         orientation: "vertical"
         MDGridLayout:
@@ -81,13 +87,6 @@ WindowManager:
                 allow_stretch:False
                 size: self.texture_size
                 source: "images/Start_SelectButtonNew.png"
-
-        MDBoxLayout:
-            orientation: "horizontal"
-            size_hint: 1,.2
-            Image:
-                source: "images/Bottom_Menu.png"
-                size_hint: 2.49,2.47
 
 
 <LoginWindow>:
