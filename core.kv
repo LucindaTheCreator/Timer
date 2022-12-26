@@ -18,11 +18,15 @@ WindowManager:
 
 # Primjer global settingsa za widget
 
+#ISOCP3 zamijeniti
 <MDLabel>:
     font_name: "Fonts/Montserrat-Light.ttf"
 <Button>:
     background_color: (0,0,0,0)
     color: (0,0,0,1)
+<ImageButton>:
+    background_color: (0,0,0,0)
+    background_color: (0,0,0,0)
 <MDTextField>:
     mode: "round"
     halign: "center"
@@ -44,28 +48,45 @@ WindowManager:
             source: "images/Bottom_MenuNew.png"
             size: self.size
 
+    #NE DIRATI :C
+    MDFloatLayout:
+        Button:
+            pos_hint: {"y":0.9,"x":0}
+            size_hint: 0.2,0.1
+        Button:
+            pos_hint: {"y":0.9,"x":0.8}
+            size_hint: 0.2,0.1
+            on_release:
+                root.goto_window(6)
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,0.13
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+
+
+
     MDBoxLayout:
         orientation: "vertical"
         MDGridLayout:
             size_hint: 1, .1
             rows: 1
-            cols: 4
-
-            ImageButton:
-                text: "Support us!"
-                size_hint: 0.3,0.3
-
-
+            cols: 1
             MDLabel:
                 text: root.WelcomeText
                 halign: "center"
 
 
-            ImageButton:
-                source: "images/Settings_Icon.png"
-                size_hint: 0.2,0.2
-                on_release:
-                    root.goto_window(6)
 
         MDFloatLayout:
             MDLabel:
@@ -246,21 +267,67 @@ WindowManager:
 
 <MainWindow>:
     name: "main"
-    MDBoxLayout:
-        orientation: "vertical"
-        MDGridLayout:
-            rows: 1
-            cols: 3
-            Button:
-                size_hint: .1,.1
-                text: "return"
-                on_release:
-                    root.goto_window(1)
-            MDLabel:
-                text: root.MainText
-            MDIconButton:
-                on_release:
-                    root.goto_window(6)
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/Bottom_MenuNew.png"
+            size: self.size
+
+
+
+    #NE DIRATI !!
+    MDFloatLayout:
+        Button:
+            pos_hint: {"y":0.9,"x":0}
+            size_hint: 0.2,0.1
+        Button:
+            pos_hint: {"y":0.9,"x":0.8}
+            size_hint: 0.2,0.1
+            on_release:
+                root.goto_window(6)
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,0.13
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+            ImageButton:
+                #src:
+                #on_release:
+
+    MDFloatLayout:
+        id: FloatTimer
+        MDLabel:
+            text: root.timer_time
+            size_hint: 1, .2
+            font_size: "100dp"
+            halign: "center"
+            pos_hint: {"center_x":.5,"center_y":.7}
+            color: "black"
+        #PLACEHOLDER
+        Button:
+            id: placeholderEventWidget
+            size_hint: .72, .3
+            background_color: "blue"
+            pos_hint: {"center_x":.5,"center_y":.47}
+        MDFillRoundFlatButton:
+            id: StartTimerButton
+            text: "Start"
+            pos_hint: {"center_x":.5,"center_y":.25}
+            size_hint: .4,.07
+            font_size: "36dp"
+            on_press:
+                root.ActivateTimer()
+
+
+
+
 
 
 

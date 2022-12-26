@@ -30,7 +30,3 @@ class TimingEncapsulator:
         hh, mm, ss = getCurrentTime()
         self.creationTime = calcTimescore(hh, mm, ss)
 
-
-time_1 = getCurrentTime()
-x = calcTimescore(time_1[0], time_1[1], time_1[2])
-print(formatTimescore(x))

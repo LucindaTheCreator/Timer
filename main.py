@@ -10,7 +10,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDFillRoundFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.menu import MDDropdownMenu
 
@@ -79,7 +79,7 @@ class User:
         return self.windows.get(item, 1)
 
 
-class BasicFunctions:
+class BasicWidgetFunctions:
 
     def goto_window(self, window_id):
         U.set_last_screen(self.manager.current)
@@ -95,11 +95,15 @@ class BasicFunctions:
         return self.manager.get_screen(screen_name)
 
 
+class CommonWidgetVariables:
+    default_bottom_menu_src = "images/Bottom_MenuNew.png"
+
+
 class WindowManager(ScreenManager):
     pass
 
 
-class StartWindow(Screen, BasicFunctions):
+class StartWindow(Screen, BasicWidgetFunctions):
     WelcomeText = StringProperty("__NAME__")
     StartMotivationalLabel = StringProperty("Let's get some work done!")
 
@@ -141,13 +145,37 @@ class StartWindow(Screen, BasicFunctions):
         self.goto_window(2)
 
 
-class MainWindow(Screen, BasicFunctions):
+class MainWindow(Screen, BasicWidgetFunctions):
     MainText = StringProperty("Here go thy chosen chore")
     CurrentActivity = ""
+    timer_time = StringProperty("00:00")
+    Paus_Cont = StringProperty("Pause")
 
     def setCurrentActivity(self, activity):
         self.CurrentActivity = activity
         self.MainText = f"You have chosen: {self.CurrentActivity}"
+
+    def PauseTimer(self):
+        print("i be clicked")
+
+    def ResetTimer(self):
+        self.fLayout.add_widget(self.sButton)
+        self.fLayout.remove_widget(self.PauseButton)
+        self.fLayout.remove_widget(self.ResetButton)
+
+    def ActivateTimer(self):
+        # Startaj count
+        self.fLayout = self.ids.FloatTimer
+        self.sButton = self.ids.StartTimerButton
+        self.fLayout.remove_widget(self.sButton)
+        self.PauseButton = MDFillRoundFlatButton(text=self.Paus_Cont, on_press=lambda a: self.PauseTimer(),
+                                                 pos_hint={"center_x": .28, "center_y": .25}, size_hint=(.4, .07),
+                                                 font_size="36dp")
+        self.ResetButton = MDFillRoundFlatButton(text="Reset", on_press=lambda a: self.ResetTimer(),
+                                                 pos_hint={"center_x": .72, "center_y": .25}, size_hint=(.4, .07),
+                                                 font_size="36dp")
+        self.fLayout.add_widget(self.PauseButton)
+        self.fLayout.add_widget(self.ResetButton)
 
 
 # Login je mostly gotov
@@ -262,15 +290,16 @@ class LoginWindow(Screen):
         self.manager.current = "second_form"
 
 
-class SubWindowBlank(Screen, BasicFunctions):
+class SubWindowBlank(Screen, BasicWidgetFunctions):
     pass
 
-class SubWindowStats(Screen, BasicFunctions):
+
+class SubWindowStats(Screen, BasicWidgetFunctions):
     pass
 
 
 # second form je mostly gotov
-class SecondFormWindow(Screen, BasicFunctions):
+class SecondFormWindow(Screen, BasicWidgetFunctions):
     textVerTot = 1
 
     def txtChk(self):
@@ -307,11 +336,11 @@ class SecondFormWindow(Screen, BasicFunctions):
         self.manager.current = "start"
 
 
-class SubWindowFacts(Screen, BasicFunctions):
+class SubWindowFacts(Screen, BasicWidgetFunctions):
     pass
 
 
-class SettingsWindow(Screen, BasicFunctions):
+class SettingsWindow(Screen, BasicWidgetFunctions):
     def WipeUserQuery(self):
         self.show_alert_dialog()
         return
