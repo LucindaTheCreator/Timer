@@ -325,7 +325,7 @@ class SettingsWindow(Screen, BasicFunctions):
         quit(0)
 
     def show_alert_dialog(self):
-        self.dialog = MDDialog(
+        self.del_data_dialog = MDDialog(
             text="Are you sure? \n ..there is no going back",
             buttons=[
                 MDFlatButton(
@@ -340,15 +340,13 @@ class SettingsWindow(Screen, BasicFunctions):
                 ),
             ],
         )
-        self.dialog.open()
+        self.del_data_dialog.open()
 
     def close_alert_dialog(self):
-        self.dialog.dismiss()
+        self.del_data_dialog.dismiss()
 
 class MainApp(MDApp):
     def build(self):
-        self.width = Window.width
-        self.height = Window.height
         Start_Screen = Builder.load_file("core.kv")
         return Start_Screen
 

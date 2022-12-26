@@ -76,16 +76,18 @@ WindowManager:
                 halign: "center"
             Button:
                 id: startPointerButton
-                size_hint: 0.9,0.55
-                pos_hint: {"center_x":.5,"center_y":.35}
+                size_hint: 1,None
+                pos_hint:
+                height: img_placeholder_start.height
+                pos_hint: img_placeholder_start.pos_hint
                 on_release:
                     root.center_widget_clicked()
             Image:
-
-                pos_hint: {"y":-0.094,"x":.05}
-                size_hint: .9,.9
-                allow_stretch:False
-                size: self.texture_size
+                id: img_placeholder_start
+                pos_hint: {"center_x":.5,"center_y":.4}
+                size_hint: .9,.5
+                allow_stretch:True
+                keep_ratio:False
                 source: "images/Start_SelectButtonNew.png"
 
 
