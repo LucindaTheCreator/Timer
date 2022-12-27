@@ -62,16 +62,16 @@ WindowManager:
             orientation: "horizontal"
             size_hint: 1,0.13
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/Home_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/StatsPage_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/Planner_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source: "images/Bottom_MenuIcons/UserPage_icon.png"
                 #on_release:
 
 
@@ -95,6 +95,7 @@ WindowManager:
                 font_size: "24dp"
                 text: root.StartMotivationalLabel
                 halign: "center"
+                color: (0,0,0,0.7)
             Button:
                 id: startPointerButton
                 size_hint: 1,None
@@ -270,10 +271,8 @@ WindowManager:
     canvas.before:
         Rectangle:
             pos: 0, 0
-            source: "images/Bottom_MenuNew.png"
+            source: "images/Main_Window_Kanvas.png"
             size: self.size
-
-
 
     #NE DIRATI !!
     MDFloatLayout:
@@ -289,16 +288,16 @@ WindowManager:
             orientation: "horizontal"
             size_hint: 1,0.13
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/Home_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/WorkTime_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/BreakTime_icon.png"
                 #on_release:
             ImageButton:
-                #src:
+                source:"images/Bottom_MenuIcons/noMotivation_icon.png"
                 #on_release:
 
     MDFloatLayout:
