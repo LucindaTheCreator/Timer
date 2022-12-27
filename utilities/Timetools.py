@@ -8,7 +8,7 @@ def calcTimescore(hh, mm, ss):
 def formatTimescore(timescore):
     hh = (timescore // 3600)
     mm = (timescore // 60) % 60
-    ss = (timescore % 3600)
+    ss = (timescore % 3600) % 60
     return hh, mm, ss
 
 
@@ -25,8 +25,28 @@ def getLocTimeGreet():
     return dates.get(key, "Hi,")
 
 
-class TimingEncapsulator:
+def fix_format(x):
+    if len(str(x)) == 1:
+        return "0" + str(x)
+    return x
+
+
+class TimerInstance:
     def __init__(self):
         hh, mm, ss = getCurrentTime()
         self.creationTime = calcTimescore(hh, mm, ss)
 
+    def StartTic(self):
+        self.startTime = time.perf_counter()
+
+    def GetTicSecs(self):
+        time0 = round(time.perf_counter() - self.startTime)
+        hh, mm, ss = formatTimescore(time0)
+        return {"h": hh, "m": mm, "s": ss}
+
+    def freezeEvent(self):
+        self.freezeTime = round(time.perf_counter() - self.startTime)
+
+    def unFreezeEvent(self):
+        interval = round(time.perf_counter() - self.startTime) - self.freezeTime
+        self.startTime += interval

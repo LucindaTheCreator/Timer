@@ -44,7 +44,7 @@ class ImageButton(ButtonBehavior, Image):
 class User:
 
     def __init__(self):
-        self.windows = {1: "start", 2: "main", 3: "blank", 4: "stats", 5: "facts", 6: "settings"}
+        self.windows = {1: "start", 2: "main", 3: "planner", 4: "stats", 5: "facts", 6: "settings", 7: "user"}
         self.last_screen = 1
         self.hasUD = False
 
@@ -84,15 +84,22 @@ class BasicWidgetFunctions:
     def goto_window(self, window_id):
         U.set_last_screen(self.manager.current)
         self.manager.current = U[window_id]
+        self.superWindowInit(U[window_id])
 
     def goto_last(self):
         self.manager.current = U.get_last_screen()
+        self.superWindowInit(self.manager.current)
 
     def getWindowSize(self):
         return Window.size
 
     def getScreen(self, screen_name):
         return self.manager.get_screen(screen_name)
+
+    def superWindowInit(self, window_name):
+        # All init functions must contain this function!
+        new_screen = self.manager.get_screen(window_name)
+        new_screen.start_init()
 
 
 class CommonWidgetVariables:
@@ -146,37 +153,66 @@ class StartWindow(Screen, BasicWidgetFunctions):
 
 
 class MainWindow(Screen, BasicWidgetFunctions):
-    MainText = StringProperty("Here go thy chosen chore")
     CurrentActivity = ""
+    ButtonStates = {"PauseButton": 1, }
     timer_time = StringProperty("00:00")
     Paus_Cont = StringProperty("Pause")
+    TSCHD = TimerInstance()
+
+    def start_init(self):
+        print("Main window init")
 
     def setCurrentActivity(self, activity):
         self.CurrentActivity = activity
         self.MainText = f"You have chosen: {self.CurrentActivity}"
 
+    def UpdateTimer(self):
+        tc = self.TSCHD.GetTicSecs()
+        show = f"{fix_format(tc['m']) if not tc['h'] else fix_format(tc['h'])}:{fix_format(tc['s']) if not tc['h'] else fix_format(tc['m'])}"
+        self.timer_time = show
+
     def PauseTimer(self):
-        print("i be clicked")
+        self.ButtonStates["PauseButton"] *= -1
+        states = {-1: "Resume", 1: "Pause"}
+        self.PauseButton.text = states[self.ButtonStates["PauseButton"]]
+        if self.ButtonStates["PauseButton"] == -1:
+            print("paused")
+            self.TSCHD.freezeEvent()
+            self.tick_event.cancel()
+        else:
+            print("resumed")
+            self.TSCHD.unFreezeEvent()
+            self.UpdateTimer()
+            self.tick_event = Clock.schedule_interval(lambda a: self.UpdateTimer(), 1)
 
     def ResetTimer(self):
+        self.tick_event.cancel()
+        self.timer_time = "00:00"
         self.fLayout.add_widget(self.sButton)
         self.fLayout.remove_widget(self.PauseButton)
         self.fLayout.remove_widget(self.ResetButton)
 
+    def FocusColor(self, widget):
+        widget.background_color = (0, 0, 0, 1)
+
+    def AddEvent(self):
+        print("adding imaginary event..")
+
     def ActivateTimer(self):
         # Startaj count
+        self.TSCHD.StartTic()
         self.fLayout = self.ids.FloatTimer
         self.sButton = self.ids.StartTimerButton
         self.fLayout.remove_widget(self.sButton)
         self.PauseButton = MDFillRoundFlatButton(text=self.Paus_Cont, on_press=lambda a: self.PauseTimer(),
-                                                 pos_hint={"center_x": .28, "center_y": .25}, size_hint=(.4, .07),
+                                                 pos_hint={"center_x": .28, "center_y": .2}, size_hint=(.4, .07),
                                                  font_size="36dp")
         self.ResetButton = MDFillRoundFlatButton(text="Reset", on_press=lambda a: self.ResetTimer(),
-                                                 pos_hint={"center_x": .72, "center_y": .25}, size_hint=(.4, .07),
+                                                 pos_hint={"center_x": .72, "center_y": .2}, size_hint=(.4, .07),
                                                  font_size="36dp")
         self.fLayout.add_widget(self.PauseButton)
         self.fLayout.add_widget(self.ResetButton)
-
+        self.tick_event = Clock.schedule_interval(lambda a: self.UpdateTimer(), 1)
 
 # Login je mostly gotov
 class LoginWindow(Screen):
@@ -290,16 +326,18 @@ class LoginWindow(Screen):
         self.manager.current = "second_form"
 
 
-class SubWindowBlank(Screen, BasicWidgetFunctions):
-    pass
+class SubWindowPlanner(Screen, BasicWidgetFunctions):
+    def start_init(self):
+        print("Planner init")
 
 
 class SubWindowStats(Screen, BasicWidgetFunctions):
-    pass
+    def start_init(self):
+        print("stats init")
 
 
 # second form je mostly gotov
-class SecondFormWindow(Screen, BasicWidgetFunctions):
+class SecondFormWindow(Screen):
     textVerTot = 1
 
     def txtChk(self):
@@ -337,10 +375,14 @@ class SecondFormWindow(Screen, BasicWidgetFunctions):
 
 
 class SubWindowFacts(Screen, BasicWidgetFunctions):
-    pass
+    def start_init(self):
+        print("Facts window init")
 
 
 class SettingsWindow(Screen, BasicWidgetFunctions):
+    def start_init(self):
+        print("Settings window init")
+
     def WipeUserQuery(self):
         self.show_alert_dialog()
         return
@@ -373,6 +415,12 @@ class SettingsWindow(Screen, BasicWidgetFunctions):
 
     def close_alert_dialog(self):
         self.del_data_dialog.dismiss()
+
+
+class SubWindowUser(Screen, BasicWidgetFunctions):
+    def start_init(self):
+        print("User window init")
+
 
 class MainApp(MDApp):
     def build(self):
