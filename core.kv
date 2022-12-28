@@ -23,7 +23,7 @@ WindowManager:
 <MDLabel>:
     font_name: "Fonts/ISOCP3.ttf"
 <Button>:
-    background_color: (0,0,0,1)
+    background_color: (0,0,0,0)
     color: (0,0,0,1)
 <ImageButton>:
     background_color: (0,0,0,0)
@@ -327,16 +327,12 @@ WindowManager:
             fill_color: 49/255, 77/255, 99/255
             on_press:
                 root.ActivateTimer()
-        TextInput:
-            id: "EventInput"
-            pos_hint: {"center_x":.44,"center_y":.585}
+        MDLabel:
+            pos_hint: {"center_x":.5,"center_y":.585}
             size_hint: 0.5,0.065
             font_size: "36dp"
-            cursor_color: 0,0,0,0
-            font_name: "Fonts/ISOCP3.ttf"
-            background_color: 0,0,0,0.03
-            on_focus:
-                root.FocusColor(self)
+            text: "Events"
+            halign: "center"
 
         Button:
             pos_hint: {"center_x":.76,"center_y":.585}
