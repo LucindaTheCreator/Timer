@@ -1,5 +1,6 @@
 import os
 import re
+from functools import partial
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -9,11 +10,15 @@ from kivy.properties import StringProperty, BooleanProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.textinput import TextInput
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton, MDFillRoundFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.selectioncontrol import MDSwitch, MDCheckbox
 
+from app_utils import PopupBuilder
 from utilities import MatrixLoader
 from utilities.Hashtools import *
 from utilities.Modular_DB_creator import Assembler
@@ -22,7 +27,6 @@ from utilities.modular_DB_opener import Opener
 
 Window.size = (700 / 1.8, 1560 / 2)
 
-
 try:
     Runhash = open("runhash.dat", "r")
 
@@ -30,6 +34,7 @@ except FileNotFoundError:
     Runhash = InitHash("runhash", "FirstRun:int:0")
 
 StartButton = MatrixLoader.build_utl("Assets/SB_heatmap.utl")
+
 
 Datas = FormatHash(Runhash.read())
 print(Datas)
@@ -138,12 +143,7 @@ class StartWindow(Screen, BasicWidgetFunctions):
         self.WelcomeText = f"{getLocTimeGreet()} {U.name}."
 
     def center_widget_clicked(self):
-        sz = (Window.size[0] / 2, Window.size[1] / 2)
-        mp = Window.mouse_pos
-        wdg = self.ids.startPointerButton
-        scalars = (wdg.size[0] / len(StartButton[0]), wdg.size[1] / len(StartButton))
-        r_pos = (int((mp[0] - wdg.pos[0]) / scalars[0]), int((330 - (mp[1] - wdg.pos[1])) / scalars[1]))
-        choice = StartButton[r_pos[1]][r_pos[0]]
+        choice = MatrixLoader.CheckAreaOnUtl(StartButton, self.ids.startPointerButton, Window.mouse_pos)
         if not choice:
             return
         acts = U.GetActivities()
@@ -153,6 +153,7 @@ class StartWindow(Screen, BasicWidgetFunctions):
 
 
 class MainWindow(Screen, BasicWidgetFunctions):
+    popupEvents = {}
     CurrentActivity = ""
     ButtonStates = {"PauseButton": 1, }
     timer_time = StringProperty("00:00")
@@ -161,6 +162,7 @@ class MainWindow(Screen, BasicWidgetFunctions):
 
     def start_init(self):
         print("Main window init")
+        # Here the program loads activities
 
     def setCurrentActivity(self, activity):
         self.CurrentActivity = activity
@@ -192,16 +194,94 @@ class MainWindow(Screen, BasicWidgetFunctions):
         self.fLayout.remove_widget(self.PauseButton)
         self.fLayout.remove_widget(self.ResetButton)
 
-    def FocusColor(self, widget):
-        widget.background_color = (0, 0, 0, 1)
+    def ChangeWidgetState(self, widget, z):
+
+        print(widget, z)
+        if self.popupEvents[widget].disabled:
+            self.popupEvents[widget].disabled = False
+        else:
+            self.popupEvents[widget].disabled = True
+
+    def EventCreationTab(self):
+
+        self.BuildEventPopup = PopupBuilder.BasePopup(parent=self.ids.FloatTimer)
+        self.BuildEventPopup.build_self()
+        return
+        ##ADD DESC LOOK TO IMAGE
+        self.popupEvents["title"] = MDLabel(text="My Event", pos_hint={"center_x": 0.5, "center_y": 0.75},
+                                            size_hint=(0.4, 0.1), halign="center")
+
+        self.popupEvents["time_frame"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.65},
+                                                   size_hint=(0.7, 0.1), text="00:00",
+                                                   halign="center",
+                                                   background_color=(0, 0, 0, 0.0))
+
+        self.popupEvents["timed_label"] = MDLabel(text="Scheduled:", pos_hint={"center_x": 0.5, "center_y": 0.6},
+                                                  size_hint=(0.7, 0.1))
+
+        self.popupEvents["timed_switch"] = MDCheckbox(pos_hint={"center_x": 0.75, "center_y": 0.6},
+                                                      size_hint=(0.1, 0.06))
+
+        self.popupEvents["start_time"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.52},
+                                                   size_hint=(0.7, 0.1), text="12.Jan.2022",
+                                                   halign="center",
+                                                   background_color=(0, 0, 0, 0.0),
+                                                   disabled=not self.popupEvents["timed_switch"].active)
+
+        self.popupEvents["description"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.47},
+                                                    size_hint=(0.7, 0.1), text="description",
+                                                    background_color=(0, 0, 0, 0.0))
+        self.popupEvents["label_repeatable"] = MDLabel(text="Repeatable:",
+                                                       pos_hint={"center_x": 0.4, "center_y": 0.4},
+                                                       size_hint=(0.4, 0.1), )
+        self.popupEvents["switch_repeatable"] = MDCheckbox(pos_hint={"center_x": 0.75, "center_y": 0.4},
+                                                           size_hint=(0.1, 0.06))
+
+        self.popupEvents["label_repeats"] = MDLabel(text="Repeats:",
+                                                    pos_hint={"center_x": 0.4, "center_y": 0.34},
+                                                    size_hint=(0.4, 0.1), )
+        self.popupEvents["input_repeats"] = TextInput(text="",
+                                                      disabled=True,
+                                                      pos_hint={"center_x": 0.75, "center_y": 0.34},
+                                                      size_hint=(0.1, 0.04), )
+        self.popupEvents["label_infinite"] = MDLabel(text="Infinite:",
+                                                     pos_hint={"center_x": 0.4, "center_y": 0.28},
+                                                     size_hint=(0.4, 0.1), )
+        self.popupEvents["switch_infinite"] = MDSwitch(pos_hint={"center_x": 0.75, "center_y": 0.28},
+                                                       size_hint=(0.1, 0.1), )
+        self.popupEvents["label_interval"] = MDLabel(text="Interval:",
+                                                     pos_hint={"center_x": 0.4, "center_y": 0.22},
+                                                     size_hint=(0.4, 0.1), )
+        self.popupEvents["input_interval"] = TextInput(text="24:00",
+                                                       pos_hint={"center_x": 0.75, "center_y": 0.22},
+                                                       size_hint=(0.1, 0.04), )
+        self.popupEvents["save_button"] = MDFillRoundFlatButton(text="Save",
+                                                                pos_hint={"center_x": 0.4, "center_y": 0.16},
+                                                                size_hint=(0.1, 0.04), disabled=True
+                                                                )
+
+        self.popupEvents["discard_button"] = MDFillRoundFlatButton(text="Discard",
+                                                                   pos_hint={"center_x": 0.6, "center_y": 0.16},
+                                                                   size_hint=(0.1, 0.04),
+                                                                   )
+
+        self.popupEvents["timed_switch"].on_touch_down = partial(self.ChangeWidgetState,
+                                                                 "start_time")
+
+        self.popupEvents["switch_repeatable"].on_touch_down = partial(self.ChangeWidgetState,
+                                                                      "input_repeats")
+
+        self.fLayout = self.ids.FloatTimer
+        for x in self.popupEvents.values():
+            self.fLayout.add_widget(x)
 
     def AddEvent(self):
-        print("adding imaginary event..")
+        self.EventCreationTab()
 
     def ActivateTimer(self):
         # Startaj count
-        self.TSCHD.StartTic()
         self.fLayout = self.ids.FloatTimer
+        self.TSCHD.StartTic()
         self.sButton = self.ids.StartTimerButton
         self.fLayout.remove_widget(self.sButton)
         self.PauseButton = MDFillRoundFlatButton(text=self.Paus_Cont, on_press=lambda a: self.PauseTimer(),
@@ -213,6 +293,7 @@ class MainWindow(Screen, BasicWidgetFunctions):
         self.fLayout.add_widget(self.PauseButton)
         self.fLayout.add_widget(self.ResetButton)
         self.tick_event = Clock.schedule_interval(lambda a: self.UpdateTimer(), 1)
+
 
 # Login je mostly gotov
 class LoginWindow(Screen):
@@ -311,7 +392,8 @@ class LoginWindow(Screen):
         APerm.create_tables(["Users", f"{NameAndSurname}_Events", f"{NameAndSurname}_Projects",
                              f"{NameAndSurname}_Goals", f"{NameAndSurname}_Activities"],
                             [["ref_name", "name", "surname", "email", "age_group", "user_identifier"],
-                             ["event_name", "event_desc", "start_time", "end_time", "event_score", "event_active",
+                             ["event_name", "event_desc", "event_time", "event_repetitions", "event_cooldown",
+                              "event_score", "event_active",
                               "event_priority", "EID"],
                              ["project_name", "project_desc", "start_date", "end_date", "project_active",
                               "project_score", "project_priority", "project_goal", "PID"],

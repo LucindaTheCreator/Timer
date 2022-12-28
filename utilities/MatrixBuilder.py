@@ -1,8 +1,8 @@
 from PIL import Image
 from numpy import array
 
-im_1 = Image.open(r"SelectButtonAreas.png")
-im_1 = im_1.resize((50, 50))
+im_1 = Image.open(r"PopupWidgetAreas.png")
+im_1 = im_1.resize((50, 30))
 ar = array(im_1)
 
 dct = {2: 1, 3: 2, 4: 3}
