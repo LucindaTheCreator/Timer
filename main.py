@@ -205,7 +205,13 @@ class MainWindow(Screen, BasicWidgetFunctions):
     def EventCreationTab(self):
 
         self.BuildEventPopup = PopupBuilder.BasePopup(parent=self.ids.FloatTimer)
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="HelloItsMe", id="CL1")
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="No, really", id="CL2")
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="But can you do this", id="CL3")
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="Not really", id="CL4")
+
         self.BuildEventPopup.build_self()
+        self.BuildEventPopup.removeWidget("CL4")
         return
         ##ADD DESC LOOK TO IMAGE
         self.popupEvents["title"] = MDLabel(text="My Event", pos_hint={"center_x": 0.5, "center_y": 0.75},
