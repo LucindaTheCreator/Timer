@@ -1,6 +1,5 @@
 import os
 import re
-from functools import partial
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -10,13 +9,10 @@ from kivy.properties import StringProperty, BooleanProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.textinput import TextInput
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton, MDFillRoundFlatButton
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
-from kivymd.uix.selectioncontrol import MDSwitch, MDCheckbox
 
 from app_utils import PopupBuilder
 from utilities import MatrixLoader
@@ -208,78 +204,10 @@ class MainWindow(Screen, BasicWidgetFunctions):
         self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="HelloItsMe", id="CL1")
         self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="No, really", id="CL2")
         self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="But can you do this", id="CL3")
-        self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="Not really", id="CL4")
+        self.BuildEventPopup.addWidget("testLabel", pos=1, id="C4")
+        self.BuildEventPopup.addWidget("titleLabel", pos=1, text="Le title", id="T1")
 
         self.BuildEventPopup.build_self()
-        self.BuildEventPopup.removeWidget("CL4")
-        return
-        ##ADD DESC LOOK TO IMAGE
-        self.popupEvents["title"] = MDLabel(text="My Event", pos_hint={"center_x": 0.5, "center_y": 0.75},
-                                            size_hint=(0.4, 0.1), halign="center")
-
-        self.popupEvents["time_frame"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.65},
-                                                   size_hint=(0.7, 0.1), text="00:00",
-                                                   halign="center",
-                                                   background_color=(0, 0, 0, 0.0))
-
-        self.popupEvents["timed_label"] = MDLabel(text="Scheduled:", pos_hint={"center_x": 0.5, "center_y": 0.6},
-                                                  size_hint=(0.7, 0.1))
-
-        self.popupEvents["timed_switch"] = MDCheckbox(pos_hint={"center_x": 0.75, "center_y": 0.6},
-                                                      size_hint=(0.1, 0.06))
-
-        self.popupEvents["start_time"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.52},
-                                                   size_hint=(0.7, 0.1), text="12.Jan.2022",
-                                                   halign="center",
-                                                   background_color=(0, 0, 0, 0.0),
-                                                   disabled=not self.popupEvents["timed_switch"].active)
-
-        self.popupEvents["description"] = TextInput(pos_hint={"center_x": 0.5, "center_y": 0.47},
-                                                    size_hint=(0.7, 0.1), text="description",
-                                                    background_color=(0, 0, 0, 0.0))
-        self.popupEvents["label_repeatable"] = MDLabel(text="Repeatable:",
-                                                       pos_hint={"center_x": 0.4, "center_y": 0.4},
-                                                       size_hint=(0.4, 0.1), )
-        self.popupEvents["switch_repeatable"] = MDCheckbox(pos_hint={"center_x": 0.75, "center_y": 0.4},
-                                                           size_hint=(0.1, 0.06))
-
-        self.popupEvents["label_repeats"] = MDLabel(text="Repeats:",
-                                                    pos_hint={"center_x": 0.4, "center_y": 0.34},
-                                                    size_hint=(0.4, 0.1), )
-        self.popupEvents["input_repeats"] = TextInput(text="",
-                                                      disabled=True,
-                                                      pos_hint={"center_x": 0.75, "center_y": 0.34},
-                                                      size_hint=(0.1, 0.04), )
-        self.popupEvents["label_infinite"] = MDLabel(text="Infinite:",
-                                                     pos_hint={"center_x": 0.4, "center_y": 0.28},
-                                                     size_hint=(0.4, 0.1), )
-        self.popupEvents["switch_infinite"] = MDSwitch(pos_hint={"center_x": 0.75, "center_y": 0.28},
-                                                       size_hint=(0.1, 0.1), )
-        self.popupEvents["label_interval"] = MDLabel(text="Interval:",
-                                                     pos_hint={"center_x": 0.4, "center_y": 0.22},
-                                                     size_hint=(0.4, 0.1), )
-        self.popupEvents["input_interval"] = TextInput(text="24:00",
-                                                       pos_hint={"center_x": 0.75, "center_y": 0.22},
-                                                       size_hint=(0.1, 0.04), )
-        self.popupEvents["save_button"] = MDFillRoundFlatButton(text="Save",
-                                                                pos_hint={"center_x": 0.4, "center_y": 0.16},
-                                                                size_hint=(0.1, 0.04), disabled=True
-                                                                )
-
-        self.popupEvents["discard_button"] = MDFillRoundFlatButton(text="Discard",
-                                                                   pos_hint={"center_x": 0.6, "center_y": 0.16},
-                                                                   size_hint=(0.1, 0.04),
-                                                                   )
-
-        self.popupEvents["timed_switch"].on_touch_down = partial(self.ChangeWidgetState,
-                                                                 "start_time")
-
-        self.popupEvents["switch_repeatable"].on_touch_down = partial(self.ChangeWidgetState,
-                                                                      "input_repeats")
-
-        self.fLayout = self.ids.FloatTimer
-        for x in self.popupEvents.values():
-            self.fLayout.add_widget(x)
 
     def AddEvent(self):
         self.EventCreationTab()
