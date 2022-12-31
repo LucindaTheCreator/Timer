@@ -2,6 +2,7 @@ from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.image import Image
 from kivy.uix.layout import Layout
+from kivy.uix.textinput import TextInput
 from kivymd.uix.label import MDLabel
 
 from app_utils.custom_widgets import *
@@ -84,7 +85,11 @@ class BasePopup:
                                                                     color="white")
 
     def inputLabel(self, *args, **kwargs):
-        default_args = {"id": "default", "text": "placeholder", "stack_id": self.curStackID, "font_size": "36dp"}
+
+        def saveText(self):
+            self.controls["id"] = self.text
+
+        default_args = {"id": "default", "text": "placeholder", "stack_id": self.curStackID, "font_size": "18dp"}
         for x in kwargs.items():
             default_args[x[0]] = x[1]
         wCName = f"Label"
@@ -92,18 +97,19 @@ class BasePopup:
             self.AddToRefs(f"{default_args['id']}", default_args['stack_id'])
         except Warning:
             return
-        self.popupWidgets[default_args['stack_id']][wCName] = Label(text=default_args["text"],
-                                                                    pos_hint={"center_x": 0.5,
-                                                                              "center_y": self.stackHeight},
-                                                                    size_hint=(0.3, 0.2), halign="center",
-                                                                    font_size=default_args["font_size"],
-                                                                    font_name="Fonts/Montserrat-Light.ttf",
-                                                                    color="white")
+        self.popupWidgets[default_args['stack_id']][wCName] = TextInput(text=default_args["text"],
+                                                                        pos_hint={"center_x": 0.5,
+                                                                                  "center_y": self.stackHeight},
+                                                                        size_hint=(0.6, 0.1), halign="center",
+                                                                        font_size=default_args["font_size"],
+                                                                        font_name="Fonts/Montserrat-Light.ttf", )
+        self.popupWidgets[default_args['stack_id']][wCName].on_text = saveText
+        self.controls["id"] = ""
 
-    def testLabel(self, *args, **kwargs):
+    def scrollSelectorLabel(self, *args, **kwargs):
 
         default_args = {"id": "default", "text": "placeholder", "stack_id": self.curStackID, "font_size": "12dp",
-                        "dn_threshold": 0, "up_threshold": 31, "custom_list": None, "template": None,
+                        "dn_threshold": 0, "up_threshold": 31, "custom_list": None, "template": "date",
                         "current_month": 12, "current_day": 30, "current_year": 2022}
         for x in kwargs.items():
             default_args[x[0]] = x[1]
@@ -216,6 +222,11 @@ class BasePopup:
                                                  default_args["current_year"]]
 
         def timeTemplate():
+            def updateT(index, key):
+                default_args["stack_id"] = self.idRef[default_args["id"]]
+                self.controls[default_args['id']][index] = \
+                    int(self.popupWidgets[default_args['stack_id']][key].text)
+
             self.popupWidgets[default_args['stack_id']]['seconds'] = ScrollSelector(text=default_args["text"],
                                                                                     pos_hint={"center_x": 0.75,
                                                                                               "center_y": self.stackHeight},
@@ -227,7 +238,7 @@ class BasePopup:
             self.popupWidgets[default_args['stack_id']]['seconds'].bindCustomArgs(
                 customAccList=None,
                 dn_threshold=0,
-                up_threshold=60)
+                up_threshold=59, on_scroll=lambda: updateT(2, 'seconds'))
             self.popupWidgets[default_args['stack_id']]['minutes'] = ScrollSelector(text=default_args["text"],
                                                                                     pos_hint={"center_x": 0.5,
                                                                                               "center_y": self.stackHeight},
@@ -239,7 +250,7 @@ class BasePopup:
             self.popupWidgets[default_args['stack_id']]['minutes'].bindCustomArgs(
                 customAccList=None,
                 dn_threshold=0,
-                up_threshold=60)
+                up_threshold=59, on_scroll=lambda: updateT(1, 'minutes'))
             self.popupWidgets[default_args['stack_id']]['hours'] = ScrollSelector(text=default_args["text"],
                                                                                   pos_hint={"center_x": 0.25,
                                                                                             "center_y": self.stackHeight},
@@ -250,13 +261,18 @@ class BasePopup:
             self.popupWidgets[default_args['stack_id']]['hours'].bindCustomArgs(
                 customAccList=None,
                 dn_threshold=0,
-                up_threshold=60)
+                up_threshold=23, on_scroll=lambda: updateT(0, 'hours'))
+            self.controls[default_args['id']] = [0, 0, 0]
 
         try:
             self.AddToRefs(f"{default_args['id']}", default_args['stack_id'])
         except Warning:
             return
-        dateTemplate()
+        templates = {"time": timeTemplate, "date": dateTemplate}
+        templates[default_args["template"]]()
+
+    def submitButton(self, *args, **kwargs):
+        pass
 
     def AddToRefs(self, wPname, sID, ):
         if wPname in self.idRef:
@@ -310,7 +326,7 @@ class BasePopup:
         if self.stackHeight < 0.2:
             return "Widget is full!"
         widgetDict = {"checkboxLabel": self.checkboxLabel, "titleLabel": self.titleLabel,
-                      "inputLabel": self.inputLabel, "testLabel": self.testLabel}
+                      "inputLabel": self.inputLabel, "testLabel": self.scrollSelectorLabel}
         widgetDict[type](stack_id=pos, *args, **kwargs)
         self.UpdatePopupWidgets()
         self.UpdateIdRef()

@@ -205,6 +205,7 @@ class MainWindow(Screen, BasicWidgetFunctions):
         self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="No, really", id="CL2")
         self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="But can you do this", id="CL3")
         self.BuildEventPopup.addWidget("testLabel", pos=1, id="C4")
+        self.BuildEventPopup.addWidget("inputLabel", pos=-1, id="C5")
         self.BuildEventPopup.addWidget("titleLabel", pos=1, text="Le title", id="T1")
 
         self.BuildEventPopup.build_self()

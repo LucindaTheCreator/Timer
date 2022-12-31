@@ -50,7 +50,8 @@ class ScrollSelector(Label, ButtonBehavior):
             self.touched = True
 
     def calcAvgDist(self, pos1, pos2, size):
-        return (abs(pos1[0] - pos2[0]) ** 2 + abs(pos1[1] - pos2[1]) ** 2) < ((size[0] // 2) ** 2 + (size[1] // 2) ** 2)
+        return (abs(pos1[0] - pos2[0]) ** 2 + abs(pos1[1] - pos2[1]) ** 2) < (
+                    (size[0] // 2) ** 2 + (size[1] // 2) ** 2) // 1.5
 
     def set_up_for_days(self, current_date, month_num, year, currentMY=True):
         self.upThreshold = constant_datas.days_per_month_calculator(year)[month_num]
