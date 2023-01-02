@@ -13,12 +13,13 @@ WindowManager:
     SubWindowPlanner:
     SubWindowStats:
     SubWindowFacts:
+    #subwindows fact -- no motivation window
     SettingsWindow:
     SubWindowUser:
 
 
 # Primjer global settingsa za widget
-
+# Moram skriptat on
 #ISOCP3 zamijeniti
 <MDLabel>:
     font_name: "Fonts/ISOCP3.ttf"
@@ -46,7 +47,7 @@ WindowManager:
     canvas.before:
         Rectangle:
             pos: 0, 0
-            source: "images/Bottom_MenuNew.png"
+            source: "images/StartWindow_Canvas.png"
             size: self.size
 
     #NE DIRATI :C
@@ -96,7 +97,7 @@ WindowManager:
 
         MDFloatLayout:
             MDLabel:
-                pos_hint: {"center_y":.7,"center_x":.5}
+                pos_hint: {"center_y":.8,"center_x":.5}
                 font_name: "Fonts/Unbounded/Unbounded-Bold.ttf"
                 font_size: "24dp"
                 text: root.StartMotivationalLabel
@@ -376,30 +377,50 @@ WindowManager:
 
 <SubWindowStats>:
     name: "stats"
-    MDBoxLayout:
-        orientation: "vertical"
-        MDGridLayout:
-            size_hint: 1, .1
-            rows: 1
-            cols: 3
-            Button:
-                size_hint: .1,.1
-                text: "return"
-                on_release:
-                    root.goto_last()
-            MDLabel:
-                text: "stats"
-        MDFloatLayout:
-            MDLabel:
-                text: ""
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/StatsWindow_Canvas.png"
+            size: self.size
+    MDFloatLayout:
+        Button:
+            pos_hint: {"y":0.9,"x":0}
+            size_hint: 0.2,0.1
+        Button:
+            pos_hint: {"y":0.9,"x":0.8}
+            size_hint: 0.2,0.1
+            on_release:
+                root.goto_window(6)
         MDBoxLayout:
             orientation: "horizontal"
-            size_hint: 1,.2
-            MDLabel:
-                text: "DONJI TOOLBAR"
+            size_hint: 1,0.13
+            ImageButton:
+                source:"images/Bottom_MenuIcons/Home_icon.png"
+                on_release:
+                    root.goto_window(1)
+            ImageButton:
+                #source:"images/Bottom_MenuIcons/StatsPage_icon.png"
+                #on_release:
+                #    root.goto_window(4)
+                color: 0,0,0,0
+            ImageButton:
+                #source:"images/Bottom_MenuIcons/Planner_icon.png"
+                #on_release:
+                #   root.goto_window(3)
+                color: 0,0,0,0
+            ImageButton:
+                source: "images/Bottom_MenuIcons/UserPage_icon.png"
+                on_release:
+                    root.goto_window(7)
+
 
 <SubWindowFacts>:
     name: "facts"
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/NoMotivation_windowCanvas.png"
+            size: self.size
     MDBoxLayout:
         orientation: "vertical"
         MDGridLayout:
@@ -423,6 +444,7 @@ WindowManager:
                 text: "DONJI TOOLBAR"
 
 
+
 <SettingsWindow>:
     name: "settings"
     MDBoxLayout:
@@ -444,24 +466,38 @@ WindowManager:
 
 <SubWindowUser>:
     name: "user"
-    MDBoxLayout:
-        orientation: "vertical"
-        MDGridLayout:
-            size_hint: 1, .1
-            rows: 1
-            cols: 3
-            Button:
-                size_hint: .1,.1
-                text: "return"
-                on_release:
-                    root.goto_last()
-            MDLabel:
-                text: "User account"
-        MDFloatLayout:
-            MDLabel:
-                text: ""
+    canvas.before:
+        Rectangle:
+            pos: 0, 0
+            source: "images/User_window.png"
+            size: self.size
+            #NE DIRATI !!
+    MDFloatLayout:
+        Button:
+            pos_hint: {"y":0.9,"x":0}
+            size_hint: 0.2,0.1
+        Button:
+            pos_hint: {"y":0.9,"x":0.8}
+            size_hint: 0.2,0.1
+            on_release:
+                root.goto_window(6)
         MDBoxLayout:
             orientation: "horizontal"
-            size_hint: 1,.2
-            MDLabel:
-                text: "DONJI TOOLBAR"
+            size_hint: 1,0.13
+            ImageButton:
+                source:"images/Bottom_MenuIcons/Home_icon.png"
+                on_release:
+                    root.goto_window(1)
+            ImageButton:
+                #source:"images/Bottom_MenuIcons/WorkTime_icon.png"
+                #on_release:
+                color: 0,0,0,0
+            ImageButton:
+                #source:
+                #on_release:
+                color:0,0,0,0
+            ImageButton:
+                source:"images/Bottom_MenuIcons/noMotivation_icon.png"
+                on_release:
+                    root.goto_window(5)
+
