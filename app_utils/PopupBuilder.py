@@ -3,6 +3,7 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.image import Image
 from kivy.uix.layout import Layout
 from kivy.uix.textinput import TextInput
+from kivymd.uix.button import MDFillRoundFlatButton
 from kivymd.uix.label import MDLabel
 
 from app_utils.custom_widgets import *
@@ -115,13 +116,25 @@ class BasePopup:
             default_args[x[0]] = x[1]
         wCName = f"Label"
 
-        # please for the love of god optimize this
+        def base_template(keys):
+            default_kwargs = {"size_hint": (0.2, 0.1), "halign": "center", "font_size": default_args["font_size"],
+                              "font_name": "Fonts/Montserrat-Light.ttf", "color": "black", "text": "NULL"}
+            reference_widget: dict = self.popupWidgets[default_args["stack_id"]]
+            for iterator in range(1, 4):
+                reference_widget[keys[iterator - 1]] = ScrollSelector(**default_kwargs,
+                                                                      pos_hint={"center_x": iterator / 4,
+                                                                                "center_y": self.stackHeight})
+
         def dateTemplate():
+
+            reference_widget: dict = self.popupWidgets[default_args["stack_id"]]
+
             def dayUpdate():
                 default_args["stack_id"] = self.idRef[default_args["id"]]
                 self.controls[default_args['id']][0] = \
                     int(self.popupWidgets[default_args['stack_id']]['days'].text)
 
+            # please for the love of god optimize this
             def mntUpdate():
                 default_args["stack_id"] = self.idRef[default_args["id"]]
                 if not (default_args["current_month"] ==
@@ -151,67 +164,24 @@ class BasePopup:
                 dayUpdate()
 
             def yrUpdate():
-                default_args["stack_id"] = self.idRef[default_args["id"]]
-                if default_args["current_year"] != int(self.popupWidgets[default_args['stack_id']]['years'].text):
-                    self.popupWidgets[default_args['stack_id']]['months'].bindCustomArgs(
-                        customAccList=constant_datas.year_months_en,
-                        dn_threshold=default_args["dn_threshold"],
-                        up_threshold=default_args["up_threshold"], on_scroll=mntUpdate)
-                    self.popupWidgets[default_args['stack_id']]['days'].bindCustomArgs(
-                        customAccList=None,
-                        dn_threshold=1,
-                        up_threshold=
-                        constant_datas.days_per_month_calculator(
-                            int(self.popupWidgets[default_args['stack_id']]['years'].text))[
-                            constant_datas.year_months_en.index(
-                                self.popupWidgets[default_args['stack_id']]['months'].text)], on_scroll=dayUpdate)
+
+                if default_args["current_year"] != int(reference_widget['years'].text):
+                    reference_widget['months'].bindCustomArgs(custom_acc_list=constant_datas.year_months_en)
                 else:
-                    self.popupWidgets[default_args['stack_id']]['months'].bindCustomArgs(
-                        customAccList=constant_datas.year_months_en[default_args['current_month'] - 1:],
-                        dn_threshold=default_args["dn_threshold"],
-                        up_threshold=default_args["up_threshold"], on_scroll=mntUpdate)
-                    mntUpdate()
+                    reference_widget['months'].bindCustomArgs(
+                        custom_acc_list=constant_datas.year_months_en[default_args['current_month'] - 1:])
+                mntUpdate()
                 self.controls[default_args['id']][2] = \
-                    int(self.popupWidgets[default_args['stack_id']]['years'].text)
+                    int(reference_widget['years'].text)
 
-            self.popupWidgets[default_args['stack_id']]['years'] = ScrollSelector(text=default_args["text"],
-                                                                                  size_hint=(0.2, 0.1), halign="center",
-                                                                                  font_size=default_args["font_size"],
-                                                                                  font_name="Fonts/Montserrat-Light.ttf",
-                                                                                  color="black",
-                                                                                  pos_hint={"center_x": 0.75,
-                                                                                            "center_y": self.stackHeight}
-                                                                                  )
-
-            self.popupWidgets[default_args['stack_id']]['years'].bindCustomArgs(
-                customAccList=None,
+            reference_widget['years'].bindCustomArgs(
                 dn_threshold=default_args["current_year"],
                 up_threshold=2037, on_scroll=yrUpdate)
 
-            self.popupWidgets[default_args['stack_id']]['months'] = ScrollSelector(text=default_args["text"],
-                                                                                   size_hint=(0.2, 0.1),
-                                                                                   halign="center",
-                                                                                   font_size=default_args["font_size"],
-                                                                                   font_name="Fonts/Montserrat-Light.ttf",
-                                                                                   color="black",
-                                                                                   pos_hint={"center_x": 0.5,
-                                                                                             "center_y": self.stackHeight}
-                                                                                   )
-            self.popupWidgets[default_args['stack_id']]['months'].bindCustomArgs(
-                customAccList=constant_datas.year_months_en[default_args['current_month'] - 1:],
-                dn_threshold=default_args["dn_threshold"],
-                up_threshold=default_args["up_threshold"], on_scroll=mntUpdate)
+            reference_widget['months'].bindCustomArgs(
+                custom_acc_list=constant_datas.year_months_en[default_args['current_month'] - 1:], on_scroll=mntUpdate)
 
-            self.popupWidgets[default_args['stack_id']]['days'] = ScrollSelector(text=default_args["text"],
-                                                                                 size_hint=(0.2, 0.1), halign="center",
-                                                                                 font_size=default_args["font_size"],
-                                                                                 font_name="Fonts/Montserrat-Light.ttf",
-                                                                                 color="black",
-                                                                                 pos_hint={"center_x": 0.25,
-                                                                                           "center_y": self.stackHeight}
-                                                                                 )
-            self.popupWidgets[default_args['stack_id']]['days'].bindCustomArgs(
-                customAccList=None,
+            reference_widget['days'].bindCustomArgs(
                 dn_threshold=default_args["current_day"],
                 up_threshold=
                 constant_datas.days_per_month_calculator(default_args['current_year'])[
@@ -269,10 +239,34 @@ class BasePopup:
         except Warning:
             return
         templates = {"time": timeTemplate, "date": dateTemplate}
+        template_keys = {"time": ["seconds", "minutes", "hours"], "date": ["days", "months", "years"]}
+        base_template(template_keys[default_args["template"]])
         templates[default_args["template"]]()
 
     def submitButton(self, *args, **kwargs):
-        pass
+        default_args = {"id": "default", "text_1": "placeholder", "text_2": "placeholder_2"
+            , "stack_id": self.curStackID, "bind_event_1": None, "bind_event_2": None}
+        for x in kwargs.items():
+            default_args[x[0]] = x[1]
+        wCName = f"Button"
+        try:
+            self.AddToRefs(f"{default_args['id']}", default_args['stack_id'])
+        except Warning:
+            return
+        self.popupWidgets[default_args['stack_id']][f"{wCName}_1"] = MDFillRoundFlatButton(text=default_args["text_1"],
+                                                                                           on_release=default_args[
+                                                                                               "bind_event_1"],
+                                                                                           pos_hint={"center_x": 0.7,
+                                                                                                     "center_y": self.stackHeight},
+                                                                                           size_hint=(0.25, 0.05)
+                                                                                           )
+        self.popupWidgets[default_args['stack_id']][f"{wCName}_2"] = MDFillRoundFlatButton(text=default_args["text_2"],
+                                                                                           on_release=default_args[
+                                                                                               "bind_event_2"],
+                                                                                           pos_hint={"center_x": 0.3,
+                                                                                                     "center_y": self.stackHeight},
+                                                                                           size_hint=(0.25, 0.05)
+                                                                                           )
 
     def AddToRefs(self, wPname, sID, ):
         if wPname in self.idRef:
@@ -317,7 +311,9 @@ class BasePopup:
             if List[n][sub_index] == find:
                 return n
 
-    def getDatas(self, key):
+    def getDatas(self, key=None):
+        if not key:
+            return self.controls.items()
         return self.controls.get(key)
 
     def addWidget(self, type, pos=-1, *args, **kwargs):
@@ -326,7 +322,8 @@ class BasePopup:
         if self.stackHeight < 0.2:
             return "Widget is full!"
         widgetDict = {"checkboxLabel": self.checkboxLabel, "titleLabel": self.titleLabel,
-                      "inputLabel": self.inputLabel, "testLabel": self.scrollSelectorLabel}
+                      "inputLabel": self.inputLabel, "testLabel": self.scrollSelectorLabel,
+                      "control_buttons": self.submitButton}
         widgetDict[type](stack_id=pos, *args, **kwargs)
         self.UpdatePopupWidgets()
         self.UpdateIdRef()
@@ -344,7 +341,6 @@ class BasePopup:
             self.destroy_self()
 
     def destroy_self(self):
-        print(self.controls)
         for x in self.popupWidgets:
             for y in x.values():
                 self.parent.remove_widget(y)

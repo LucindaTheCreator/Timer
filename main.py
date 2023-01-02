@@ -198,15 +198,21 @@ class MainWindow(Screen, BasicWidgetFunctions):
         else:
             self.popupEvents[widget].disabled = True
 
+    def EventCreated(self):
+        print(self.BuildEventPopup.getDatas())
+
     def EventCreationTab(self):
 
         self.BuildEventPopup = PopupBuilder.BasePopup(parent=self.ids.FloatTimer)
         self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="HelloItsMe", id="CL1")
         self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="No, really", id="CL2")
         self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="But can you do this", id="CL3")
-        self.BuildEventPopup.addWidget("testLabel", pos=1, id="C4")
-        self.BuildEventPopup.addWidget("inputLabel", pos=-1, id="C5")
+        self.BuildEventPopup.addWidget("testLabel", pos=1, id="C4", template="time")
+        self.BuildEventPopup.addWidget("inputLabel", pos=-1, id="C5", text="event description")
         self.BuildEventPopup.addWidget("titleLabel", pos=1, text="Le title", id="T1")
+        self.BuildEventPopup.addWidget("control_buttons", pos=-1, text_1="Create", text_2="Discard",
+                                       bind_event_1=lambda a: self.EventCreated(), bind_event_2=
+                                       lambda b: self.BuildEventPopup.destroy_self())
 
         self.BuildEventPopup.build_self()
 
