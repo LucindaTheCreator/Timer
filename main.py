@@ -31,7 +31,6 @@ except FileNotFoundError:
 
 StartButton = MatrixLoader.build_utl("Assets/SB_heatmap.utl")
 
-
 Datas = FormatHash(Runhash.read())
 print(Datas)
 APerm = Assembler("UserData", "a")
@@ -200,21 +199,36 @@ class MainWindow(Screen, BasicWidgetFunctions):
 
     def EventCreated(self):
         print(self.BuildEventPopup.getDatas())
+        self.BuildEventPopup.destroy_self()
 
     def EventCreationTab(self):
 
         self.BuildEventPopup = PopupBuilder.BasePopup(parent=self.ids.FloatTimer)
-        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="HelloItsMe", id="CL1")
-        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="No, really", id="CL2")
-        self.BuildEventPopup.addWidget("checkboxLabel", pos=1, text="But can you do this", id="CL3")
-        self.BuildEventPopup.addWidget("testLabel", pos=1, id="C4", template="time")
-        self.BuildEventPopup.addWidget("inputLabel", pos=-1, id="C5", text="event description")
-        self.BuildEventPopup.addWidget("titleLabel", pos=1, text="Le title", id="T1")
+        self.BuildEventPopup.addWidget("inputLabel", pos=-1, text="Event name", id="ILT", background_color=(0, 0, 0, 0),
+                                       font_size="24dp")
+        self.BuildEventPopup.addWidget("inputLabel", pos=-1, id="IL1", text="event description")
+        self.BuildEventPopup.addWidget("scrollSelectorLabel", pos=-1, id="SST", template="time")
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="Timed event", id="CL1",
+                                       additional_bind=lambda a: self.CustomDatetimeSelector(a))
+        self.BuildEventPopup.addWidget("checkboxLabel", pos=-1, text="Repeatable", id="CL2",
+                                       additional_bind=lambda a: self.CustomDatetimeSelector(a))
         self.BuildEventPopup.addWidget("control_buttons", pos=-1, text_1="Create", text_2="Discard",
                                        bind_event_1=lambda a: self.EventCreated(), bind_event_2=
                                        lambda b: self.BuildEventPopup.destroy_self())
 
         self.BuildEventPopup.build_self()
+
+    def CustomDatetimeSelector(self, state):
+        if state == 1:
+            self.BuildEventPopup.addWidget("scrollSelectorLabel", pos=5, id="SS1", template="date")
+            self.BuildEventPopup.addWidget("scrollSelectorLabel", pos=6, id="SS2", template="time")
+            self.BuildEventPopup.destroy_self()
+            self.BuildEventPopup.build_self()
+        else:
+            self.BuildEventPopup.removeWidget("SS1")
+            self.BuildEventPopup.removeWidget("SS2")
+            self.BuildEventPopup.destroy_self()
+            self.BuildEventPopup.build_self()
 
     def AddEvent(self):
         self.EventCreationTab()
@@ -350,6 +364,8 @@ class LoginWindow(Screen):
 
 
 class SubWindowPlanner(Screen, BasicWidgetFunctions):
+    planner_text = StringProperty("Planner")
+
     def start_init(self):
         print("Planner init")
 
